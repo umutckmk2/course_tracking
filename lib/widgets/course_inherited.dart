@@ -1,4 +1,4 @@
-import 'package:course_tracking/models/course_model.dart';
+import 'package:course_tracking/pages/course/course_model.dart';
 import 'package:flutter/material.dart';
 
 class CourseInheritedWidget extends InheritedWidget {

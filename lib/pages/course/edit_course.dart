@@ -1,16 +1,20 @@
-import 'package:course_tracking/controller/course_cntrl.dart';
-import 'package:course_tracking/models/course_model.dart';
+import 'package:course_tracking/pages/course/course_model.dart';
+import 'package:course_tracking/services/hive_course_cache_service.dart';
+import 'package:course_tracking/utilities/show_error.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+
 class EditCourse extends StatelessWidget {
   final CourseModel courseModel;
   const EditCourse({Key? key, required this.courseModel}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final _cacheService =
+        HiveCourseCacheService(Hive.box<CourseModel>("courses"));
     String _initialValue = DateFormat("EEEE", "tr_TR").format(DateTime.now());
     final _textCntrl = TextEditingController();
-    final _courseCntrl = CourseCntrl(context);
-    _textCntrl.text = DateFormat("hh:mm").format(courseModel.startingTime!);
+    _textCntrl.text = DateFormat("hh:mm").format(courseModel.startingTime);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -37,7 +41,8 @@ class EditCourse extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(vertical: 20),
               child: TextFormField(
-                controller: TextEditingController(text: courseModel.courseTitle),
+                controller:
+                    TextEditingController(text: courseModel.courseTitle),
                 keyboardType: TextInputType.text,
                 decoration: const InputDecoration(
                   floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -57,9 +62,9 @@ class EditCourse extends StatelessWidget {
             ),
             GestureDetector(
               onTap: () {
-                _courseCntrl
-                    .selectTime(courseModel)
-                    .whenComplete(() => _textCntrl.text = DateFormat("hh:mm").format(courseModel.startingTime!));
+               selectTimeOfDay(context).whenComplete(() =>
+                    _textCntrl.text =
+                        DateFormat("hh:mm").format(courseModel.startingTime));
               },
               child: AbsorbPointer(
                 child: Container(
@@ -135,7 +140,7 @@ class EditCourse extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  _courseCntrl.addCourse(courseModel);
+                 _cacheService.updateCourse(courseModel);
                 },
                 child: const Text(
                   "Kaydet",

@@ -1,29 +1,29 @@
 import 'dart:io';
-import 'package:course_tracking/models/course_model.dart';
+import 'package:course_tracking/pages/course/course_model.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest_all.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'models/received_notification.dart';
-import 'pages/main_page.dart';
+import 'pages/received_notification.dart';
+import 'pages/home/home_page.dart';
 
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 /// Streams are created so that app can respond to notification-related events
 /// since the plugin is initialised in the `main` function
 final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
     BehaviorSubject<ReceivedNotification>();
 
-final BehaviorSubject<String?> selectNotificationSubject = BehaviorSubject<String?>();
+final BehaviorSubject<String?> selectNotificationSubject =
+    BehaviorSubject<String?>();
 
-const MethodChannel platform = MethodChannel('dexterx.dev/flutter_local_notifications_example');
+const MethodChannel platform =
+    MethodChannel('dexterx.dev/flutter_local_notifications_example');
 
 String? selectedNotificationPayload;
 
@@ -34,32 +34,28 @@ void main() async {
   Hive.registerAdapter(CourseModelAdapter());
   await Hive.openBox<CourseModel>("courses");
 
-  final NotificationAppLaunchDetails? notificationAppLaunchDetails =
-      !kIsWeb && Platform.isLinux ? null : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  final NotificationAppLaunchDetails? notificationAppLaunchDetails = !kIsWeb &&
+          Platform.isLinux
+      ? null
+      : await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
     selectedNotificationPayload = notificationAppLaunchDetails!.payload;
   }
 
-  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-  final IOSInitializationSettings initializationSettingsIOS = IOSInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification: (
-        int id,
-        String? title,
-        String? body,
-        String? payload,
-      ) async {
-        didReceiveLocalNotificationSubject.add(
-          ReceivedNotification(
-            id: id,
-            title: title,
-            body: body,
-            payload: payload,
-          ),
-        );
-      });
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('app_icon');
+  final IOSInitializationSettings initializationSettingsIOS =
+      IOSInitializationSettings(
+          requestAlertPermission: false,
+          requestBadgePermission: false,
+          requestSoundPermission: false,
+          onDidReceiveLocalNotification:
+              (int id, String? title, String? body, String? payload) async {
+            didReceiveLocalNotificationSubject.add(
+              ReceivedNotification(
+                  id: id, title: title, body: body, payload: payload),
+            );
+          });
 
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -76,9 +72,7 @@ void main() async {
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      home: HomePage(),
     ),
   );
 }
-
-

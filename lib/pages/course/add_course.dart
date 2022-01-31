@@ -1,23 +1,24 @@
-import 'package:course_tracking/controller/course_cntrl.dart';
+import 'package:course_tracking/pages/course/course_view_model.dart';
+import 'package:course_tracking/utilities/show_error.dart';
 import 'package:course_tracking/widgets/course_inherited.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class AddCourse extends StatefulWidget {
-  const AddCourse({Key? key}) : super(key: key);
+  final CourseViewModel courseViewModel;
+  const AddCourse({Key? key, required this.courseViewModel}) : super(key: key);
 
   @override
   State<AddCourse> createState() => _AddCourseState();
 }
 
 class _AddCourseState extends State<AddCourse> {
-  String _initialValue = DateFormat("EEEE", "tr_TR").format(DateTime.now());
-
+  var _initialValue = DateTime.now();
   @override
   Widget build(BuildContext context) {
+    DateTime _date = DateTime.now();
     final courseModel = CourseInheritedWidget.of(context).courseModel;
     final _textCntrl = TextEditingController();
-    final _courseCntrl = CourseCntrl(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -64,9 +65,8 @@ class _AddCourseState extends State<AddCourse> {
             ),
             GestureDetector(
               onTap: () {
-                _courseCntrl
-                    .selectTime(courseModel)
-                    .whenComplete(() => _textCntrl.text = DateFormat("hh:mm").format(courseModel.startingTime!));
+                selectTimeOfDay(context).whenComplete(() => _textCntrl.text =
+                    DateFormat("hh:mm").format(courseModel.startingTime));
               },
               child: AbsorbPointer(
                 child: Container(
@@ -91,13 +91,13 @@ class _AddCourseState extends State<AddCourse> {
             ),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 20),
-              child: PopupMenuButton<String>(
+              child: PopupMenuButton<DateTime>(
                 child: ListTile(
                   shape: const RoundedRectangleBorder(
                     side: BorderSide(color: Colors.grey, width: 0.0),
                   ),
                   leading: Text(
-                    _initialValue,
+                    DateFormat("EEEE", "tr_TR").format(_initialValue),
                     style: const TextStyle(color: Colors.black, fontSize: 17),
                   ),
                   trailing: const Icon(
@@ -110,21 +110,20 @@ class _AddCourseState extends State<AddCourse> {
                   return List.generate(
                     7,
                     (i) {
-                      final date = DateFormat("EEEE", "tr_TR").format(
-                        DateTime.now().add(
-                          Duration(days: i),
-                        ),
+                      _date = DateTime.now().add(
+                        Duration(days: i),
                       );
-                      return PopupMenuItem<String>(
-                        value: date,
-                        child: Text(date),
+
+                      return PopupMenuItem<DateTime>(
+                        value: _date,
+                        child: Text(DateFormat("EEEE", "tr_TR").format(_date)),
                       );
                     },
                   );
                 },
-                onSelected: (String value) {
+                onSelected: (DateTime value) {
                   _initialValue = value;
-                  courseModel.startingDate = DateTime.now();
+                  courseModel.startingDate = value;
                 },
               ),
             ),
@@ -142,7 +141,9 @@ class _AddCourseState extends State<AddCourse> {
                   ),
                 ),
                 onPressed: () {
-                  _courseCntrl.addCourse(courseModel);
+                  widget.courseViewModel
+                      .addCourse(courseModel)
+                      .whenComplete(() => Navigator.pop(context));
                 },
                 child: const Text(
                   "Ekle",

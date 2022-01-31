@@ -16,11 +16,12 @@ class CourseModelAdapter extends TypeAdapter<CourseModel> {
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return CourseModel()
-      ..id = fields[0] as String?
-      ..courseTitle = fields[1] as String?
-      ..startingTime = fields[2] as DateTime?
-      ..startingDate = fields[3] as DateTime?;
+    return CourseModel(
+      id: fields[0] as int,
+      courseTitle: fields[1] as String,
+      startingTime: fields[2] as DateTime,
+      startingDate: fields[3] as DateTime,
+    );
   }
 
   @override
