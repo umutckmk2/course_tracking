@@ -2,14 +2,18 @@ import 'package:course_tracking/pages/course/course_model.dart';
 import 'package:course_tracking/services/hive_course_cache_service.dart';
 import 'package:course_tracking/utilities/show_error.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+
+import '../../utilities/app_router.gr.dart';
 
 class EditCourse extends StatelessWidget {
   final CourseModel courseModel;
   const EditCourse({Key? key, required this.courseModel}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final router = GetIt.I<AppRouter>();
     final _cacheService =
         HiveCourseCacheService(Hive.box<CourseModel>("courses"));
     String _initialValue = DateFormat("EEEE", "tr_TR").format(DateTime.now());
@@ -21,7 +25,7 @@ class EditCourse extends StatelessWidget {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            router.pop();
           },
           icon: const Icon(
             Icons.arrow_back,
@@ -140,7 +144,8 @@ class EditCourse extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                 _cacheService.updateCourse(courseModel);
+                  
+                 _cacheService.updateCourse(courseModel).whenComplete(() => router.pop());
                 },
                 child: const Text(
                   "Kaydet",

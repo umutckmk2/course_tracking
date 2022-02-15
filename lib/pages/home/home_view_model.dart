@@ -5,15 +5,15 @@ import '../course/course_model.dart';
 
 import 'package:mobx/mobx.dart';
 
-part 'home_page_view_model.g.dart';
+part 'home_view_model.g.dart';
 
-class HomePageViewModel = _HomePageViewModel with _$HomePageViewModel;
+class HomeViewModel = _HomeViewModel with _$HomeViewModel;
 late CourseCacheServices cacheServices;
 final notificationService = CourseNotificationService();
 
-abstract class _HomePageViewModel with Store {
+abstract class _HomeViewModel with Store {
   final CourseCacheServices cacheServices;
-  _HomePageViewModel(this.cacheServices);
+  _HomeViewModel(this.cacheServices);
   @observable
    ObservableList<CourseModel> courses = <CourseModel>[].asObservable();
 

@@ -1,31 +1,28 @@
 import 'package:course_tracking/pages/course/course_view_model.dart';
+import 'package:course_tracking/utilities/app_router.gr.dart';
 import 'package:course_tracking/utilities/show_error.dart';
-import 'package:course_tracking/widgets/course_inherited.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
-class AddCourse extends StatefulWidget {
+class AddCourseWidget extends StatelessWidget {
   final CourseViewModel courseViewModel;
-  const AddCourse({Key? key, required this.courseViewModel}) : super(key: key);
-
-  @override
-  State<AddCourse> createState() => _AddCourseState();
-}
-
-class _AddCourseState extends State<AddCourse> {
-  var _initialValue = DateTime.now();
+  const AddCourseWidget({Key? key, required this.courseViewModel})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final router = GetIt.I<AppRouter>();
     DateTime _date = DateTime.now();
-    final courseModel = CourseInheritedWidget.of(context).courseModel;
+    final courseModel = courseViewModel.courseModel;
     final _textCntrl = TextEditingController();
+    final _initialValue = ValueNotifier<DateTime>(_date);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            router.pop();
           },
           icon: const Icon(
             Icons.arrow_back,
@@ -65,14 +62,17 @@ class _AddCourseState extends State<AddCourse> {
             ),
             GestureDetector(
               onTap: () {
-                selectTimeOfDay(context).whenComplete(() => _textCntrl.text =
-                    DateFormat("hh:mm").format(courseModel.startingTime));
+                setCourseStartingTime(courseModel, context).whenComplete(() {
+                  courseViewModel.startingTimeAsString =
+                      DateFormat("hh:mm").format(courseModel.startingTime);
+                  print(courseViewModel.startingTimeAsString);
+                });
               },
               child: AbsorbPointer(
                 child: Container(
                   margin: const EdgeInsets.symmetric(vertical: 20),
                   child: TextFormField(
-                    controller: _textCntrl,
+                    initialValue: courseViewModel.startingTimeAsString,
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -89,44 +89,51 @@ class _AddCourseState extends State<AddCourse> {
                 ),
               ),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 20),
-              child: PopupMenuButton<DateTime>(
-                child: ListTile(
-                  shape: const RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.grey, width: 0.0),
-                  ),
-                  leading: Text(
-                    DateFormat("EEEE", "tr_TR").format(_initialValue),
-                    style: const TextStyle(color: Colors.black, fontSize: 17),
-                  ),
-                  trailing: const Icon(
-                    Icons.arrow_drop_down,
-                    size: 30,
-                    color: Colors.black,
-                  ),
-                ),
-                itemBuilder: (BuildContext context) {
-                  return List.generate(
-                    7,
-                    (i) {
-                      _date = DateTime.now().add(
-                        Duration(days: i),
-                      );
+            ValueListenableBuilder<DateTime>(
+                valueListenable: _initialValue,
+                builder: (context, value, _) {
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 20),
+                    child: PopupMenuButton<DateTime>(
+                      child: ListTile(
+                        shape: const RoundedRectangleBorder(
+                          side: BorderSide(color: Colors.grey, width: 0.0),
+                        ),
+                        leading: Text(
+                          DateFormat("EEEE", "tr_TR").format(value),
+                          style: const TextStyle(
+                              color: Colors.black, fontSize: 17),
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_drop_down,
+                          size: 30,
+                          color: Colors.black,
+                        ),
+                      ),
+                      itemBuilder: (BuildContext context) {
+                        return List.generate(
+                          7,
+                          (i) {
+                            _date = DateTime.now().add(
+                              Duration(days: i),
+                            );
 
-                      return PopupMenuItem<DateTime>(
-                        value: _date,
-                        child: Text(DateFormat("EEEE", "tr_TR").format(_date)),
-                      );
-                    },
+                            return PopupMenuItem<DateTime>(
+                              value: _date,
+                              child: Text(
+                                  DateFormat("EEEE", "tr_TR").format(_date)),
+                            );
+                          },
+                        );
+                      },
+                      onSelected: (DateTime value) {
+                        _initialValue.value = value;
+                        courseModel.startingDate = value;
+                        value = value;
+                      },
+                    ),
                   );
-                },
-                onSelected: (DateTime value) {
-                  _initialValue = value;
-                  courseModel.startingDate = value;
-                },
-              ),
-            ),
+                }),
             SizedBox(
               width: double.maxFinite,
               child: TextButton(
@@ -141,9 +148,9 @@ class _AddCourseState extends State<AddCourse> {
                   ),
                 ),
                 onPressed: () {
-                  widget.courseViewModel
+                  courseViewModel
                       .addCourse(courseModel)
-                      .whenComplete(() => Navigator.pop(context));
+                      .whenComplete(() => router.pop());
                 },
                 child: const Text(
                   "Ekle",

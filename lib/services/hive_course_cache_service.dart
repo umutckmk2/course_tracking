@@ -24,7 +24,9 @@ class HiveCourseCacheService implements CourseCacheServices {
   }
 
   @override
-  void deleteCourse(int id) {}
+  void deleteCourse(int id) {
+    box.delete(id);
+  }
 
   @override
   Future<List<CourseModel>> getAllCourses() async {

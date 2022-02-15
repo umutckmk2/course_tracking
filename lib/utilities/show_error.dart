@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
-Future<TimeOfDay?> selectTimeOfDay(BuildContext context) async {
+Future<TimeOfDay> selectTimeOfDay(BuildContext context) async {
     TimeOfDay currentTime =
         TimeOfDay(hour: DateTime.now().hour, minute: DateTime.now().minute);
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: currentTime,
     );
-    return picked;
+    return picked ??currentTime;
   }
 
   Future<void> setCourseStartingTime(CourseModel courseModel, BuildContext context) async {

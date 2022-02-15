@@ -1,34 +1,40 @@
 import 'package:course_tracking/pages/course/course_model.dart';
 import 'package:course_tracking/pages/course/course_view_model.dart';
-import 'package:course_tracking/pages/home/home_page_view_model.dart';
-import 'package:course_tracking/pages/course/add_course.dart';
+import 'package:course_tracking/pages/home/home_model.dart';
+import 'package:course_tracking/pages/home/home_view_model.dart';
 import 'package:course_tracking/services/hive_course_cache_service.dart';
-import 'package:course_tracking/widgets/course_inherited.dart';
-import 'package:course_tracking/pages/course/course_ui.dart';
+import 'package:course_tracking/pages/course/course_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+import '../../utilities/app_router.gr.dart';
+
+class HomeView extends StatefulWidget {
+  const HomeView({Key? key}) : super(key: key);
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomeView> createState() => _HomeViewState();
 }
 
 final HiveCourseCacheService cacheService =
     HiveCourseCacheService(Hive.box<CourseModel>("courses"));
 
-class _HomePageState extends State<HomePage> {
-  final _homePageViewModel = HomePageViewModel(cacheService);
+class _HomeViewState extends State<HomeView> {
+  final _homeViewModel = HomeViewModel(cacheService);
+  final _homeModel = HomeModel();
+  final router = GetIt.I<AppRouter>();
   @override
   void initState() {
-    _homePageViewModel.setCourses();
+    _homeViewModel.setCourses();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final textCntrl =
+        TextEditingController(text: DateFormat("hh:mm").format(DateTime.now()));
     return Container(
       color: Colors.white,
       child: SafeArea(
@@ -38,12 +44,12 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 Text(
-                  DateFormat('EEEE', 'tr_TR').format(DateTime.now()),
+                  _homeModel.currentDay,
                   style: const TextStyle(
                       fontSize: 30, fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  DateFormat('d MMMM y', 'tr_TR').format(DateTime.now()),
+                  _homeModel.currentDate,
                   style: const TextStyle(fontSize: 25),
                 ),
               ],
@@ -52,8 +58,8 @@ class _HomePageState extends State<HomePage> {
           body: Observer(builder: (_) {
             return ListView(
               children: [
-                for (CourseModel courseModel in _homePageViewModel.todayCourses)
-                  CourseUi(
+                for (CourseModel courseModel in _homeViewModel.todayCourses)
+                  CourseView(
                     courseModel: courseModel,
                   ),
               ],
@@ -62,20 +68,11 @@ class _HomePageState extends State<HomePage> {
           floatingActionButton: FloatingActionButton(
             backgroundColor: const Color(0xFF03DAC5),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (c) => CourseInheritedWidget(
-                    courseModel: CourseModel(
-                        courseTitle: '',
-                        id: 0,
-                        startingDate: DateTime.now(),
-                        startingTime: DateTime.now()),
-                    child: AddCourse(
-                      courseViewModel:
-                          CourseViewModel(cacheService, _homePageViewModel),
-                    ),
-                  ),
+              print("Hello");
+              router.push(
+                AddCourseWidget(
+                  courseViewModel:
+                      CourseViewModel(cacheService, _homeViewModel),
                 ),
               );
               // _homePageViewModel.findTodayCourses();

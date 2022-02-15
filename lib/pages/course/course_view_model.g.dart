@@ -24,6 +24,23 @@ mixin _$CourseViewModel on _CourseViewModel, Store {
     });
   }
 
+  final _$startingTimeAsStringAtom =
+      Atom(name: '_CourseViewModel.startingTimeAsString');
+
+  @override
+  String get startingTimeAsString {
+    _$startingTimeAsStringAtom.reportRead();
+    return super.startingTimeAsString;
+  }
+
+  @override
+  set startingTimeAsString(String value) {
+    _$startingTimeAsStringAtom.reportWrite(value, super.startingTimeAsString,
+        () {
+      super.startingTimeAsString = value;
+    });
+  }
+
   final _$addCourseAsyncAction = AsyncAction('_CourseViewModel.addCourse');
 
   @override
@@ -56,7 +73,8 @@ mixin _$CourseViewModel on _CourseViewModel, Store {
   @override
   String toString() {
     return '''
-courseModel: ${courseModel}
+courseModel: ${courseModel},
+startingTimeAsString: ${startingTimeAsString}
     ''';
   }
 }

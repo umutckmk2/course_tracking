@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_page_view_model.dart';
+part of 'home_view_model.dart';
 
 // **************************************************************************
 // StoreGenerator
@@ -8,16 +8,16 @@ part of 'home_page_view_model.dart';
 
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
-mixin _$HomePageViewModel on _HomePageViewModel, Store {
+mixin _$HomeViewModel on _HomeViewModel, Store {
   Computed<ObservableList<CourseModel>>? _$todayCoursesComputed;
 
   @override
   ObservableList<CourseModel> get todayCourses => (_$todayCoursesComputed ??=
           Computed<ObservableList<CourseModel>>(() => super.todayCourses,
-              name: '_HomePageViewModel.todayCourses'))
+              name: '_HomeViewModel.todayCourses'))
       .value;
 
-  final _$coursesAtom = Atom(name: '_HomePageViewModel.courses');
+  final _$coursesAtom = Atom(name: '_HomeViewModel.courses');
 
   @override
   ObservableList<CourseModel> get courses {
@@ -32,24 +32,24 @@ mixin _$HomePageViewModel on _HomePageViewModel, Store {
     });
   }
 
-  final _$setCoursesAsyncAction = AsyncAction('_HomePageViewModel.setCourses');
+  final _$setCoursesAsyncAction = AsyncAction('_HomeViewModel.setCourses');
 
   @override
   Future<dynamic> setCourses() {
     return _$setCoursesAsyncAction.run(() => super.setCourses());
   }
 
-  final _$_HomePageViewModelActionController =
-      ActionController(name: '_HomePageViewModel');
+  final _$_HomeViewModelActionController =
+      ActionController(name: '_HomeViewModel');
 
   @override
   dynamic deleteCourse(CourseModel courseModel) {
-    final _$actionInfo = _$_HomePageViewModelActionController.startAction(
-        name: '_HomePageViewModel.deleteCourse');
+    final _$actionInfo = _$_HomeViewModelActionController.startAction(
+        name: '_HomeViewModel.deleteCourse');
     try {
       return super.deleteCourse(courseModel);
     } finally {
-      _$_HomePageViewModelActionController.endAction(_$actionInfo);
+      _$_HomeViewModelActionController.endAction(_$actionInfo);
     }
   }
 
